@@ -1,0 +1,67 @@
+# [Ctrl]+[Alt]+[R] で各セクションを実行
+
+### カテゴリ一覧の取得
+GET http://localhost:3000/api/categories
+
+### カテゴリの作成
+POST http://localhost:3000/api/admin/categories
+Content-Type: application/json
+
+{
+  "name": "カテゴリ5"
+}
+
+### カテゴリの削除
+@post_id = 46562fea-edf7-4d72-9ac3-8add07b38260
+DELETE http://localhost:3000/api/admin/categories/{{post_id}}
+
+### カテゴリの名前を変更
+@post_id = 5d822a5e-c58c-4b61-88f7-bd135f76ba41
+PUT http://localhost:3000/api/admin/categories/{{post_id}}
+Content-Type: application/json
+
+{
+  "name": "カテゴリ4"
+}
+
+### 投稿記事一覧の取得
+GET http://localhost:3000/api/posts
+
+### 投稿記事(単体)の取得
+@post_id = dfda41fe-7c9e-4aa4-9d5c-da840bab4c43
+GET http://localhost:3000/api/posts/{{post_id}}
+
+### 記事の投稿
+POST http://localhost:3000/api/admin/posts
+Content-Type: application/json
+
+{
+  "title": "投稿Y",
+  "content": "投稿Yの本文。<br/>投稿Yの本文。投稿Yの本文。",
+  "coverImageURL": "https://....",
+  "categoryIds": [
+    "07942686-17d6-4ce9-b0e3-300632d8cda9",
+    "e8bd20da-027f-4620-8b50-41f608840df5"
+  ]
+}
+
+### 投稿記事を更新
+PUT http://localhost:3000/api/admin/posts/6b867019-48c5-42f8-aba4-16de541939ae
+Content-Type: application/json
+
+{
+  "title": "投稿Z",
+  "content": "投稿Zの本文。<br/>投稿Zの本文。投稿Zの本文。",
+  "coverImageURL": "https://example.com/image.jpg",
+  "categoryIds": [
+    "07942686-17d6-4ce9-b0e3-300632d8cda9",
+    "e8bd20da-027f-4620-8b50-41f608840df5"
+  ]
+}
+
+
+### 投稿記事の削除
+@post_id = ed9cb3dc-133e-4b35-857a-987d08fb821d
+DELETE http://localhost:3000/api/admin/posts/{{post_id}}
+
+
