@@ -26,22 +26,21 @@ const Page: React.FC = () => {
       <div className="space-y-3">
         <div className="md:flex md:justify-center">
           <div className="font-bold md:w-1/6 md:text-center">名 前</div>
-          <div className="md:w-5/6">寝屋川 タヌキ (Tanuki Neyagawa)</div>
+          <div className="md:w-5/6">石崎 智也 (Tomoya Ishizaki)</div>
         </div>
-        <div className="md:flex md:justify-center">
-          <div className="font-bold md:w-1/6 md:text-center">連絡先</div>
-          <div className="md:w-5/6">tanuki.neyagawa@example.com</div>
-        </div>
+
         <div className="md:flex md:justify-center">
           <div className="font-bold md:w-1/6 md:text-center">
             ポートフォリオ
           </div>
           <div className="md:w-5/6">
             <a
-              href="https://google.com"
+              href="https://tomo0778.github.io/portfolio6/"
               className="mr-1 text-blue-500 underline"
             >
-              タヌキ&apos;s Portfolio
+              Portfolio
+              <br />
+              ただずいぶん更新してません。。。これを機に新しく作り直してもいいかもと思っています。
             </a>
             (GitHub Pages)
           </div>
@@ -49,11 +48,17 @@ const Page: React.FC = () => {
         <div className="md:flex md:justify-center">
           <div className="font-bold md:w-1/6 md:text-center">自己紹介</div>
           <div className="md:w-5/6">
-            とある高専の情報系学科3年生です。最近は、ウェブアプリ開発やデザインに興味があって、Next.js
-            (React) の勉強を兼ねて、このブログアプリを構築しました。
+            石崎です。知能情報コースで、高専3年生やっています。
+            <br />
+            最近は、ウェブアプリ開発やデザインに興味があって、Next.js (React)
+            の勉強を兼ねて、このブログアプリを構築しました。
             <br />
             このブログでは、日々の学習記録や技術的な発見を共有していければと思います。よろしくお願いします！
           </div>
+        </div>
+        <div className="md:flex md:justify-center">
+          <div className="font-bold md:w-1/6 md:text-center">連絡先</div>
+          <div className="md:w-5/6">re23009t@st.omu.ac.jp</div>
         </div>
       </div>
     </main>

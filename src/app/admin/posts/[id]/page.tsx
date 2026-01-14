@@ -2,8 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
+import dayjs from "dayjs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner, faTrash } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSpinner,
+  faTrash,
+  faFileLines,
+} from "@fortawesome/free-solid-svg-icons";
 import { twMerge } from "tailwind-merge";
 
 type Category = {
@@ -21,6 +27,15 @@ type PostDetail = {
   }[];
 };
 
+type PostSummaryItem = {
+  id: string;
+  title: string;
+  createdAt: string;
+  categories: {
+    category: Category;
+  }[];
+};
+
 const Page: React.FC = () => {
   const { id } = useParams() as { id: string };
   const router = useRouter();
@@ -33,6 +48,7 @@ const Page: React.FC = () => {
 
   // 状態管理
   const [categories, setCategories] = useState<Category[] | null>(null);
+  const [posts, setPosts] = useState<PostSummaryItem[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
@@ -51,14 +67,22 @@ const Page: React.FC = () => {
     return (await res.json()) as PostDetail;
   };
 
+  // 投稿一覧取得（下部表示用）
+  const fetchPosts = async () => {
+    const res = await fetch("/api/posts", { cache: "no-store" });
+    if (!res.ok) throw new Error("投稿一覧の取得に失敗しました");
+    return (await res.json()) as PostSummaryItem[];
+  };
+
   useEffect(() => {
     const init = async () => {
       try {
         setIsLoading(true);
 
-        const [categoriesData, postData] = await Promise.all([
+        const [categoriesData, postData, postsData] = await Promise.all([
           fetchCategories(),
           fetchPost(),
+          fetchPosts(),
         ]);
 
         setCategories(categoriesData);
@@ -66,6 +90,9 @@ const Page: React.FC = () => {
         setContent(postData.content);
         setCoverImageURL(postData.coverImageURL);
         setCategoryIds(postData.categories.map((item) => item.category.id));
+
+        // 自分自身は除外
+        setPosts(postsData.filter((p) => p.id !== id));
       } catch (e) {
         setErrorMsg(
           e instanceof Error ? e.message : "予期せぬエラーが発生しました",
@@ -107,8 +134,6 @@ const Page: React.FC = () => {
       if (!res.ok) {
         throw new Error("更新に失敗しました");
       }
-
-      router.push(`/admin/posts/${id}`);
     } catch (e) {
       window.alert(
         e instanceof Error ? e.message : "予期せぬエラーが発生しました",
@@ -168,6 +193,7 @@ const Page: React.FC = () => {
         </div>
       )}
 
+      {/* ▼▼ 既存フォーム（完全維持） ▼▼ */}
       <form
         onSubmit={handleSubmit}
         className={twMerge("space-y-4", isSubmitting && "opacity-50")}
@@ -249,6 +275,49 @@ const Page: React.FC = () => {
           </button>
         </div>
       </form>
+
+      {/* ▼▼ 新機能 ▼▼ */}
+      <hr className="my-8 border-t border-slate-300" />
+
+      <div className="space-y-3">
+        <div className="text-xl font-bold">既存の投稿記事一覧</div>
+
+        <div className="mb-4">
+          <Link
+            href="/admin/posts"
+            className={twMerge(
+              "inline-flex items-center gap-1 rounded-md px-4 py-1 font-bold",
+              "bg-slate-500 text-white hover:bg-slate-600",
+            )}
+          >
+            <FontAwesomeIcon icon={faFileLines} />
+            投稿記事一覧(管理)
+          </Link>
+        </div>
+
+        {posts.map((post) => (
+          <Link
+            key={post.id}
+            href={`/admin/posts/${post.id}`}
+            className="block rounded border p-4 hover:bg-slate-50"
+          >
+            <div className="font-bold">{post.title}</div>
+            <div className="text-sm text-slate-500">
+              {dayjs(post.createdAt).format("YYYY/MM/DD")}
+            </div>
+            <div className="mt-1 flex gap-2">
+              {post.categories.map((c) => (
+                <span
+                  key={c.category.id}
+                  className="rounded bg-slate-200 px-2 py-0.5 text-sm"
+                >
+                  {c.category.name}
+                </span>
+              ))}
+            </div>
+          </Link>
+        ))}
+      </div>
     </main>
   );
 };

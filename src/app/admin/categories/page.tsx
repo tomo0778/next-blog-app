@@ -3,7 +3,12 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner, faTrash, faPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faSpinner,
+  faTrash,
+  faPlus,
+  faFileLines,
+} from "@fortawesome/free-solid-svg-icons";
 import { twMerge } from "tailwind-merge";
 
 type Category = {
@@ -84,12 +89,12 @@ const Page: React.FC = () => {
   }
 
   return (
-    <main>
+    <main className="space-y-4">
       {/* タイトル */}
-      <div className="mb-2 text-2xl font-bold">カテゴリ一覧（管理）</div>
+      <h1 className="text-2xl font-bold">カテゴリ一覧（管理）</h1>
 
-      {/* ▼▼ 新規作成ボタン（追加部分） */}
-      <div className="mb-4">
+      {/* 操作ボタン */}
+      <div className="flex gap-2">
         <Link
           href="/admin/categories/new"
           className={twMerge(
@@ -100,8 +105,18 @@ const Page: React.FC = () => {
           <FontAwesomeIcon icon={faPlus} />
           カテゴリの新規作成
         </Link>
+
+        <Link
+          href="/admin/posts"
+          className={twMerge(
+            "inline-flex items-center gap-1 rounded-md px-4 py-1 font-bold",
+            "bg-slate-500 text-white hover:bg-slate-600",
+          )}
+        >
+          <FontAwesomeIcon icon={faFileLines} />
+          投稿記事一覧(管理)
+        </Link>
       </div>
-      {/* ▲▲ ここまで */}
 
       {categories.length === 0 ? (
         <div className="text-gray-500">

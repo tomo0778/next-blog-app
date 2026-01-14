@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import dayjs from "dayjs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faSpinner, faPlus } from "@fortawesome/free-solid-svg-icons";
+import { faSpinner, faPlus, faTags } from "@fortawesome/free-solid-svg-icons";
 
 type Category = {
   id: string;
@@ -59,14 +59,25 @@ const Page: React.FC = () => {
 
   return (
     <main className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h1 className="text-2xl font-bold">投稿記事一覧(管理)</h1>
+      {/* タイトル */}
+      <h1 className="text-2xl font-bold">投稿記事一覧(管理)</h1>
+
+      {/* 操作ボタン */}
+      <div className="flex gap-2">
         <Link
           href="/admin/posts/new"
           className="flex items-center gap-1 rounded bg-indigo-500 px-3 py-1 text-white hover:bg-indigo-600"
         >
           <FontAwesomeIcon icon={faPlus} />
-          新規作成
+          記事の新規作成
+        </Link>
+
+        <Link
+          href="/admin/categories"
+          className="flex items-center gap-1 rounded bg-slate-500 px-3 py-1 text-white hover:bg-slate-600"
+        >
+          <FontAwesomeIcon icon={faTags} />
+          カテゴリ一覧(管理)
         </Link>
       </div>
 
