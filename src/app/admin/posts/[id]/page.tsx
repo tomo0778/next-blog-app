@@ -72,13 +72,6 @@ const Page: React.FC = () => {
     return (await res.json()) as Category[];
   };
 
-  // 投稿詳細取得
-  const fetchPost = async () => {
-    const res = await fetch(`/api/posts/${id}`, { cache: "no-store" });
-    if (!res.ok) throw new Error("投稿記事の取得に失敗しました");
-    return (await res.json()) as PostDetail;
-  };
-
   // 投稿一覧取得（下部表示用）
   const fetchPosts = async () => {
     const res = await fetch("/api/posts", { cache: "no-store" });
@@ -87,6 +80,12 @@ const Page: React.FC = () => {
   };
 
   useEffect(() => {
+    // 投稿詳細取得
+    const fetchPost = async () => {
+      const res = await fetch(`/api/posts/${id}`, { cache: "no-store" });
+      if (!res.ok) throw new Error("投稿記事の取得に失敗しました");
+      return (await res.json()) as PostDetail;
+    };
     const init = async () => {
       try {
         setIsLoading(true);

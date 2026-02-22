@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import dayjs from "dayjs";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -30,7 +30,7 @@ const Page: React.FC = () => {
   const [categoryId, setCategoryId] = useState("");
 
   // 投稿取得
-  const fetchPosts = async () => {
+  const fetchPosts = useCallback(async () => {
     setIsLoading(true);
 
     const params = new URLSearchParams();
@@ -44,18 +44,18 @@ const Page: React.FC = () => {
     const data = await res.json();
     setPosts(data);
     setIsLoading(false);
-  };
+  }, [title, categoryId]);
 
   // カテゴリ取得
-  const fetchCategories = async () => {
+  const fetchCategories = useCallback(async () => {
     const res = await fetch("/api/categories", { cache: "no-store" });
     setCategories(await res.json());
-  };
+  }, []);
 
   useEffect(() => {
     fetchCategories();
     fetchPosts();
-  }, []);
+  }, [fetchCategories, fetchPosts]);
 
   return (
     <main className="space-y-4">
