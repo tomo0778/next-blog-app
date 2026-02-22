@@ -7,13 +7,14 @@ import dayjs from "dayjs";
 import DOMPurify from "isomorphic-dompurify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
+import { supabase } from "@/utils/supabase"; // ◀ 追加
 
-// APIレスポンス用の型（PostSummary と合わせない）
+// APIレスポンス用の型
 type PostDetail = {
   id: string;
   title: string;
   content: string;
-  coverImageURL: string;
+  coverImageKey: string;
   createdAt: string;
   updatedAt: string;
   categories: {
@@ -75,17 +76,21 @@ const Page: React.FC = () => {
     return <div>指定された投稿は存在しません。</div>;
   }
 
+  // ▼ 追加: coverImageKey から publicUrl を取得
+  const { data: publicUrlData } = supabase.storage
+    .from("cover-image")
+    .getPublicUrl(post.coverImageKey);
+
+  const coverImageUrl = publicUrlData.publicUrl;
+
   const safeHTML = DOMPurify.sanitize(post.content);
 
   return (
     <main className="space-y-6">
-      {/* タイトル */}
       <h1 className="text-2xl font-bold">{post.title}</h1>
 
-      {/* 投稿日 & カテゴリ */}
       <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
         <span>投稿日: {dayjs(post.createdAt).format("YYYY/MM/DD")}</span>
-
         <div className="flex gap-2">
           {post.categories.map((item) => (
             <span
@@ -98,17 +103,17 @@ const Page: React.FC = () => {
         </div>
       </div>
 
-      {/* カバー画像 */}
-      <Image
-        src={post.coverImageURL}
-        alt={post.title}
-        width={800}
-        height={450}
-        priority
-        className="rounded-xl"
-      />
+      {/* カバー画像: 変換した coverImageUrl を使用 */}
+      <div className="relative aspect-video w-full overflow-hidden rounded-xl">
+        <Image
+          src={coverImageUrl} // ◀ 修正
+          alt={post.title}
+          fill // ◀ レイアウト崩れ防止のため fill 推奨（親要素に relative が必要）
+          priority
+          className="object-cover"
+        />
+      </div>
 
-      {/* 本文 */}
       <div
         className="leading-relaxed"
         dangerouslySetInnerHTML={{ __html: safeHTML }}

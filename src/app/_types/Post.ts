@@ -4,7 +4,7 @@ export type Post = {
   id: string;
   title: string;
   content: string;
-  coverImageURL: string | null;
+  coverImageKey: string | null;
   createdAt: string;
   updatedAt: string;
   categories: {

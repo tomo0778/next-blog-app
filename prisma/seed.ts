@@ -17,8 +17,8 @@ const main = async () => {
     data: {
       title: "投稿1",
       content: "投稿1の本文。<br/>投稿1の本文。投稿1の本文。",
-      coverImageURL:
-        "https://w1980.blob.core.windows.net/pg3/cover-img-red.jpg",
+      coverImageKey:
+        "private/72b6fe30-69ca-4b40-bfa3-7d719dbd4379/3fedfb5ef969643ef4cfd5fb411b3e94",
       categories: {
         create: [{ categoryId: c1.id }, { categoryId: c2.id }],
       },
@@ -29,8 +29,8 @@ const main = async () => {
     data: {
       title: "投稿2",
       content: "投稿2の本文。<br/>投稿2の本文。投稿2の本文。",
-      coverImageURL:
-        "https://w1980.blob.core.windows.net/pg3/cover-img-green.jpg",
+      coverImageKey:
+        "private/72b6fe30-69ca-4b40-bfa3-7d719dbd4379/dc78202403844c73dd85f5a0938baa78",
       categories: {
         create: [{ categoryId: c2.id }, { categoryId: c3.id }],
       },
@@ -41,8 +41,8 @@ const main = async () => {
     data: {
       title: "投稿3",
       content: "投稿3の本文。<br/>投稿3の本文。投稿3の本文。",
-      coverImageURL:
-        "https://w1980.blob.core.windows.net/pg3/cover-img-yellow.jpg",
+      coverImageKey:
+        "private/72b6fe30-69ca-4b40-bfa3-7d719dbd4379/3fedfb5ef969643ef4cfd5fb411b3e94",
       categories: {
         create: [
           { categoryId: c1.id },
@@ -57,8 +57,8 @@ const main = async () => {
     data: {
       title: "投稿4",
       content: "投稿4の本文。<br/>投稿4の本文。投稿4の本文。",
-      coverImageURL:
-        "https://w1980.blob.core.windows.net/pg3/cover-img-purple.jpg",
+      coverImageKey:
+        "private/72b6fe30-69ca-4b40-bfa3-7d719dbd4379/dc78202403844c73dd85f5a0938baa78",
       categories: {
         create: [],
       },

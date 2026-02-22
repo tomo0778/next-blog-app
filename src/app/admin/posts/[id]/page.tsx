@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
 import dayjs from "dayjs";
@@ -11,6 +11,9 @@ import {
   faFileLines,
 } from "@fortawesome/free-solid-svg-icons";
 import { twMerge } from "tailwind-merge";
+import { useAuth } from "@/app/_hooks/useAuth"; // ◀ 追加
+import { supabase } from "@/utils/supabase"; // ◀ 追加
+import CryptoJS from "crypto-js"; // ◀ 追加
 
 type Category = {
   id: string;
@@ -21,7 +24,7 @@ type PostDetail = {
   id: string;
   title: string;
   content: string;
-  coverImageURL: string;
+  coverImageKey: string;
   categories: {
     category: Category;
   }[];
@@ -36,14 +39,23 @@ type PostSummaryItem = {
   }[];
 };
 
+// MD5ハッシュ計算関数
+const calculateMD5Hash = async (file: File): Promise<string> => {
+  const buffer = await file.arrayBuffer();
+  const wordArray = CryptoJS.lib.WordArray.create(buffer);
+  return CryptoJS.MD5(wordArray).toString();
+};
+
 const Page: React.FC = () => {
   const { id } = useParams() as { id: string };
   const router = useRouter();
+  const { token, session } = useAuth(); // ◀ セッションとトークンを取得
+  const bucketName = "cover-image";
 
   // フォーム入力用 state
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
-  const [coverImageURL, setCoverImageURL] = useState("");
+  const [coverImageKey, setCoverImageKey] = useState("");
   const [categoryIds, setCategoryIds] = useState<string[]>([]);
 
   // 状態管理
@@ -88,7 +100,7 @@ const Page: React.FC = () => {
         setCategories(categoriesData);
         setTitle(postData.title);
         setContent(postData.content);
-        setCoverImageURL(postData.coverImageURL);
+        setCoverImageKey(postData.coverImageKey);
         setCategoryIds(postData.categories.map((item) => item.category.id));
 
         // 自分自身は除外
@@ -101,7 +113,6 @@ const Page: React.FC = () => {
         setIsLoading(false);
       }
     };
-
     init();
   }, [id]);
 
@@ -114,19 +125,52 @@ const Page: React.FC = () => {
     );
   };
 
+  // 画像アップロードハンドラ
+  const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return;
+    if (!session) {
+      window.alert("ログインが必要です");
+      return;
+    }
+
+    const file = e.target.files[0];
+    setIsSubmitting(true);
+
+    try {
+      const fileHash = await calculateMD5Hash(file);
+      const path = `private/${session.user.id}/${fileHash}`;
+
+      const { data, error } = await supabase.storage
+        .from(bucketName)
+        .upload(path, file, { upsert: true });
+
+      if (error || !data) throw error;
+      setCoverImageKey(data.path); // 新しいパスに更新
+    } catch (e) {
+      const msg = e instanceof Error ? e.message : "アップロード失敗";
+      window.alert(msg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   // 更新処理
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!token) return;
     setIsSubmitting(true);
 
     try {
       const res = await fetch(`/api/admin/posts/${id}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: token,
+        },
         body: JSON.stringify({
           title,
           content,
-          coverImageURL,
+          coverImageKey,
           categoryIds,
         }),
       });
@@ -226,12 +270,14 @@ const Page: React.FC = () => {
         <div className="space-y-1">
           <label className="block font-bold">カバーイメージ（URL）</label>
           <input
-            type="text"
-            className="w-full rounded-md border-2 px-2 py-1"
-            value={coverImageURL}
-            onChange={(e) => setCoverImageURL(e.target.value)}
-            required
+            type="file"
+            accept="image/*"
+            onChange={handleImageChange}
+            className="w-full rounded-md border-2 px-2 py-1 file:mr-4 file:rounded file:border-0 file:bg-indigo-50 file:px-4 file:py-1 file:text-indigo-700 hover:file:bg-indigo-100"
           />
+          <div className="mt-1 text-xs break-all text-gray-500">
+            現在のKey: {coverImageKey}
+          </div>
         </div>
 
         {/* カテゴリ */}

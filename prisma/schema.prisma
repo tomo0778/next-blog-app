@@ -11,7 +11,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 // 投稿記事テーブル
@@ -19,7 +19,7 @@ model Post {
   id             String @id @default(uuid())
   title          String
   content        String
-  coverImageURL  String
+  coverImageKey  String
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   categories     PostCategory[]
