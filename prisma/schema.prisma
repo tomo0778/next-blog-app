@@ -25,6 +25,7 @@ model Post {
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   categories     PostCategory[]
+  comments Comment[]
 }
 
 // カテゴリテーブル
@@ -34,6 +35,17 @@ model Category {
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   posts      PostCategory[]
+}
+
+// コメントテーブル
+model Comment {
+  id        String   @id @default(uuid())
+  postId    String
+  name      String
+  content   String
+  createdAt DateTime @default(now())
+
+  post      Post     @relation(fields: [postId], references: [id], onDelete: Cascade)
 }
 
 // 投稿記事とカテゴリを紐づける中間テーブル

@@ -45,6 +45,9 @@ const Page: React.FC = () => {
   const [likes, setLikes] = useState(0);
   const [dislikes, setDislikes] = useState(0);
   const [views, setViews] = useState(0);
+  const [comments, setComments] = useState<any[]>([]);
+  const [name, setName] = useState("");
+  const [commentText, setCommentText] = useState("");
 
   const { id } = useParams() as { id: string };
 
@@ -66,6 +69,25 @@ const Page: React.FC = () => {
     const data = await res.json();
     setLikes(data.likes);
     setDislikes(data.dislikes);
+  };
+
+  const handleCommentSubmit = async () => {
+    if (!name || !commentText) return;
+
+    const res = await fetch(`/api/posts/${id}/comments`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        name,
+        content: commentText,
+      }),
+    });
+
+    const newComment = await res.json();
+
+    setComments([newComment, ...comments]);
+    setName("");
+    setCommentText("");
   };
 
   useEffect(() => {
@@ -102,6 +124,10 @@ const Page: React.FC = () => {
           const relatedData = await relatedRes.json();
           setRelatedPosts(relatedData);
         }
+
+        const commentRes = await fetch(`/api/posts/${id}/comments`);
+        const commentData = await commentRes.json();
+        setComments(commentData);
       } catch (e) {
         setFetchError(
           e instanceof Error ? e.message : "予期せぬエラーが発生しました",
@@ -188,7 +214,7 @@ const Page: React.FC = () => {
         dangerouslySetInnerHTML={{ __html: safeHTML }}
       />
 
-      {/* ▼ 関連記事セクションを追加 */}
+      {/* 関連記事セクション */}
       {relatedPosts.length > 0 && (
         <section className="mt-12">
           <h2 className="mb-6 text-xl font-bold">関連記事</h2>
@@ -225,6 +251,49 @@ const Page: React.FC = () => {
           </div>
         </section>
       )}
+
+      {/* コメントセクション */}
+      <section className="mt-12 space-y-4">
+        <h2 className="text-xl font-bold">コメント</h2>
+
+        {/* フォーム */}
+        <div className="space-y-2">
+          <input
+            type="text"
+            placeholder="名前"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            className="w-full rounded border px-2 py-1"
+          />
+
+          <textarea
+            placeholder="コメントを書く"
+            value={commentText}
+            onChange={(e) => setCommentText(e.target.value)}
+            className="w-full rounded border px-2 py-1"
+          />
+
+          <button
+            onClick={handleCommentSubmit}
+            className="rounded bg-slate-700 px-4 py-1 text-white"
+          >
+            投稿する
+          </button>
+        </div>
+
+        {/* 一覧 */}
+        <div className="space-y-4">
+          {comments.map((comment) => (
+            <div key={comment.id} className="rounded border p-3">
+              <div className="text-sm font-bold">{comment.name}</div>
+              <div className="text-xs text-slate-500">
+                {dayjs(comment.createdAt).format("YYYY/MM/DD HH:mm")}
+              </div>
+              <p className="mt-1 text-sm">{comment.content}</p>
+            </div>
+          ))}
+        </div>
+      </section>
     </main>
   );
 };

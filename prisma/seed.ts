@@ -24,6 +24,9 @@ const main = async () => {
       categories: {
         create: [{ categoryId: c1.id }, { categoryId: c2.id }],
       },
+      comments: {
+        create: [],
+      },
     },
   });
 
@@ -37,6 +40,9 @@ const main = async () => {
       dislikes: 0,
       categories: {
         create: [{ categoryId: c2.id }, { categoryId: c3.id }],
+      },
+      comments: {
+        create: [],
       },
     },
   });
@@ -56,6 +62,9 @@ const main = async () => {
           { categoryId: c4.id },
         ],
       },
+      comments: {
+        create: [],
+      },
     },
   });
 
@@ -68,6 +77,9 @@ const main = async () => {
       likes: 0,
       dislikes: 0,
       categories: {
+        create: [],
+      },
+      comments: {
         create: [],
       },
     },
