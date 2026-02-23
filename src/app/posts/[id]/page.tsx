@@ -90,6 +90,23 @@ const Page: React.FC = () => {
     setCommentText("");
   };
 
+  const convertYoutubeLinks = (html: string) => {
+    const youtubeRegex = /https?:\/\/(www\.)?youtube\.com\/watch\?v=([\w-]+)/g;
+
+    return html.replace(youtubeRegex, (_, __, videoId) => {
+      return `
+      <div class="aspect-video my-4">
+        <iframe
+          src="https://www.youtube.com/embed/${videoId}"
+          frameborder="0"
+          allowfullscreen
+          class="w-full h-full rounded-lg"
+        ></iframe>
+      </div>
+    `;
+    });
+  };
+
   useEffect(() => {
     const fetchPost = async () => {
       setIsLoading(true);
@@ -162,7 +179,10 @@ const Page: React.FC = () => {
     .getPublicUrl(post.coverImageKey);
 
   const coverImageUrl = publicUrlData.publicUrl;
-  const safeHTML = DOMPurify.sanitize(post.content);
+  const safeHTML = DOMPurify.sanitize(convertYoutubeLinks(post.content), {
+    ADD_TAGS: ["iframe"],
+    ADD_ATTR: ["allow", "allowfullscreen", "frameborder", "scrolling"],
+  });
 
   return (
     <main className="space-y-6 pb-12">
