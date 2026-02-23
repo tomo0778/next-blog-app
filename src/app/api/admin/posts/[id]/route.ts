@@ -1,6 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
-import type { Post } from "@/generated/prisma/client";
+import type { Post } from "@prisma/client";
 
 type RouteParams = {
   params: Promise<{

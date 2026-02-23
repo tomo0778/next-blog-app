@@ -2,14 +2,15 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
+import Link from "next/link"; // Linkはここからインポート
 import Image from "next/image";
 import dayjs from "dayjs";
 import DOMPurify from "isomorphic-dompurify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
-import { supabase } from "@/utils/supabase"; // ◀ 追加
+import { supabase } from "@/utils/supabase";
 
-// APIレスポンス用の型
+// 既存の型
 type PostDetail = {
   id: string;
   title: string;
@@ -25,8 +26,17 @@ type PostDetail = {
   }[];
 };
 
+// ▼ 関連記事用の簡易的な型を追加
+type RelatedPost = {
+  id: string;
+  title: string;
+  coverImageKey: string;
+  createdAt: string;
+};
+
 const Page: React.FC = () => {
   const [post, setPost] = useState<PostDetail | null>(null);
+  const [relatedPosts, setRelatedPosts] = useState<RelatedPost[]>([]); // ◀ 追加
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
 
@@ -36,17 +46,25 @@ const Page: React.FC = () => {
     const fetchPost = async () => {
       setIsLoading(true);
       try {
+        // 1. メインの記事を取得
         const res = await fetch(`/api/posts/${id}`, {
           method: "GET",
           cache: "no-store",
         });
 
         if (!res.ok) {
-          throw new Error("投稿記事の取得に失敗しました");
+          throw new Error("投稿記事取得に失敗しました");
         }
 
         const data = (await res.json()) as PostDetail;
         setPost(data);
+
+        // 2. 関連記事を取得 (メイン記事の取得後に実行)
+        const relatedRes = await fetch(`/api/posts/${id}/related`);
+        if (relatedRes.ok) {
+          const relatedData = await relatedRes.json();
+          setRelatedPosts(relatedData);
+        }
       } catch (e) {
         setFetchError(
           e instanceof Error ? e.message : "予期せぬエラーが発生しました",
@@ -76,17 +94,15 @@ const Page: React.FC = () => {
     return <div>指定された投稿は存在しません。</div>;
   }
 
-  // ▼ 追加: coverImageKey から publicUrl を取得
   const { data: publicUrlData } = supabase.storage
     .from("cover-image")
     .getPublicUrl(post.coverImageKey);
 
   const coverImageUrl = publicUrlData.publicUrl;
-
   const safeHTML = DOMPurify.sanitize(post.content);
 
   return (
-    <main className="space-y-6">
+    <main className="space-y-6 pb-12">
       <h1 className="text-2xl font-bold">{post.title}</h1>
 
       <div className="flex flex-wrap items-center gap-3 text-sm text-slate-600">
@@ -103,21 +119,58 @@ const Page: React.FC = () => {
         </div>
       </div>
 
-      {/* カバー画像: 変換した coverImageUrl を使用 */}
       <div className="relative aspect-video w-full overflow-hidden rounded-xl">
         <Image
-          src={coverImageUrl} // ◀ 修正
+          src={coverImageUrl}
           alt={post.title}
-          fill // ◀ レイアウト崩れ防止のため fill 推奨（親要素に relative が必要）
+          fill
           priority
           className="object-cover"
         />
       </div>
 
       <div
-        className="leading-relaxed"
+        className="border-b pb-12 leading-relaxed"
         dangerouslySetInnerHTML={{ __html: safeHTML }}
       />
+
+      {/* ▼ 関連記事セクションを追加 */}
+      {relatedPosts.length > 0 && (
+        <section className="mt-12">
+          <h2 className="mb-6 text-xl font-bold">関連記事</h2>
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+            {relatedPosts.map((rPost) => {
+              // 各関連記事の画像URLを取得
+              const { data: rPublicUrlData } = supabase.storage
+                .from("cover-image")
+                .getPublicUrl(rPost.coverImageKey);
+
+              return (
+                <a
+                  key={rPost.id}
+                  href={`/posts/${rPost.id}`}
+                  className="group block space-y-2"
+                >
+                  <div className="relative aspect-video w-full overflow-hidden rounded-lg">
+                    <Image
+                      src={rPublicUrlData.publicUrl}
+                      alt={rPost.title}
+                      fill
+                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
+                  <h3 className="line-clamp-2 text-sm font-bold group-hover:text-blue-600">
+                    {rPost.title}
+                  </h3>
+                  <p className="text-xs text-slate-500">
+                    {dayjs(rPost.createdAt).format("YYYY/MM/DD")}
+                  </p>
+                </a>
+              );
+            })}
+          </div>
+        </section>
+      )}
     </main>
   );
 };
