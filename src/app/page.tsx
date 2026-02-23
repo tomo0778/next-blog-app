@@ -78,7 +78,7 @@ const Page: React.FC = () => {
 
   return (
     <main className="space-y-4">
-      <div className="mb-2 text-2xl font-bold">Main</div>
+      <div className="mb-2 text-2xl font-bold">Next Blog App</div>
 
       {/* 検索フォーム */}
       <div className="flex flex-wrap gap-4 rounded border bg-slate-50 p-4">

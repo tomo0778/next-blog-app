@@ -1,36 +1,206 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Next Blog App
 
-## Getting Started
+## アプリ名
 
-First, run the development server:
+Nest Blog App
+
+---
+
+## 概要
+
+Next Blog App は、技術情報の発信を目的としたブログアプリケーションです。  
+開発者やプログラミング学習者を主な利用者として想定し、コードや動画を埋め込める、同じ技術者にとって使いやすいブログとして設計しました。
+
+記事の閲覧・検索・評価（👍👎）・コメント投稿が可能で、視覚的にわかりやすく、操作しやすいUIを意識しています。
+
+---
+
+## 開発の背景・経緯
+
+私はプログラミングを勉強している者なので、私のブログを見る方もきっとプログラミングを嗜む方になるでしょう。なので、
+
+基本的なブログアプリの機能の
+
+- 検索機能
+- 評価ボタン
+- コメント投稿
+
+に加え、技術者が見やすい、使いやすいよう
+
+- コードをシンタックスハイライト付きで表示
+- YouTube動画を自動埋め込み
+
+など実装し、**「技術者が見やすい、使いやすいブログ」**を目指しました。
+
+また、バックエンドからフロントエンドまで一貫して設計することで、フルスタック開発力の向上を目的としました。
+
+---
+
+## 公開URL
+
+https://next-blog-3fz3p09l2-tomo0778s-projects.vercel.app/
+
+---
+
+# 特徴と機能の説明
+
+## ① 記事一覧・検索・ソート機能
+
+- タイトル検索
+- カテゴリ絞り込み
+- 👍数 / 👎数 / 閲覧数ソート
+- 期間指定ソート（1週間・1ヶ月など）
+
+📸 スクリーンショット①：記事一覧画面（検索フォーム含む）
+
+---
+
+## ② 記事詳細ページ
+
+- カテゴリ表示
+- いいね / バッド / 閲覧数表示
+- 関連記事表示
+- コメント投稿機能
+
+📸 スクリーンショット②：記事詳細ページ上部
+
+---
+
+## ③ YouTube動画の自動埋め込み機能
+
+記事本文にYouTube URLを記載するだけで、自動的に動画プレイヤーへ変換されます。
+
+例：
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+https://www.youtube.com/watch?v=xxxx
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+↓ 自動でiframe表示
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+📸 スクリーンショット③：動画埋め込み表示
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
+## ④ コードのシンタックスハイライト表示
 
-To learn more about Next.js, take a look at the following resources:
+- 言語ごとの色分け
+- 行番号表示
+- コピーボタン付き
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+技術記事として読みやすさを重視しました。
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+📸 スクリーンショット④：コード表示（行番号＋Copyボタン）
 
-## Deploy on Vercel
+---
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## ⑤ コメント機能（誰でも投稿可能）
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- 名前＋本文入力
+- 即時反映
+- 投稿日時表示
+
+📸 スクリーンショット⑤：コメント欄
+
+---
+
+# 使用技術（技術スタック）
+
+## フロントエンド
+
+- TypeScript
+- Next.js（App Router）
+- React
+- Tailwind CSS
+- react-syntax-highlighter
+- DOMPurify
+- dayjs
+
+## バックエンド
+
+- Next.js API Routes
+- Prisma
+- PostgreSQL（Supabase）
+
+## インフラ
+
+- Supabase（DB / Storage）
+- Vercel（デプロイ）
+
+## 開発ツール
+
+- VSCode
+- Git / GitHub
+
+---
+
+# システム構成図
+
+📸 スクリーンショット⑥：システム構成図
+
+例：
+
+```bash
+User
+↓
+Vercel (Next.js)
+↓
+Prisma
+↓
+Supabase (PostgreSQL / Storage)
+```
+
+※簡単な図をPowerPointやFigmaで作成して画像化するのがおすすめ
+
+---
+
+# 開発期間・体制
+
+- 開発体制：個人開発
+- 開発期間：2026.01.xx 〜 2026.02.xx（約XX時間）
+
+---
+
+# 工夫した点・苦労した点
+
+## ① Prismaスキーマ設計
+
+- likes / dislikes / views 追加
+- Commentモデルの追加
+- リレーション設計
+
+## ② ソート機能の動的実装
+
+URLクエリパラメータを利用し、
+
+- sort
+- period
+
+を組み合わせた動的な `orderBy` / `where` 条件を実装。
+
+## ③ 動画埋め込みとDOMPurifyの共存
+
+YouTube埋め込み時にDOMPurifyでiframeが削除される問題を解決するため、  
+`ADD_TAGS` / `ADD_ATTR` を適切に設定。
+
+## ④ コードブロックの動的レンダリング
+
+HTML文字列を分割し、  
+通常テキストとコード部分を分けてReactコンポーネントとして描画。
+
+---
+
+# 既知の課題と今後の展望
+
+- mp4動画アップロード機能の実装
+- 認証機能の追加（ユーザー別いいね管理）
+- ダークモード切替
+- 人気記事ランキング表示
+- コメントのスパム対策
+
+---
+
+# 連絡先
+
+GitHub: https://github.com/xxxx  
+Portfolio: https://xxxx
