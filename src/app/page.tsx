@@ -17,6 +17,8 @@ const Page: React.FC = () => {
   const [categories, setCategories] = useState<Category[]>([]);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [sort, setSort] = useState("latest");
+  const [period, setPeriod] = useState("all");
 
   // 検索条件用 state
   const [title, setTitle] = useState("");
@@ -29,6 +31,8 @@ const Page: React.FC = () => {
       const params = new URLSearchParams();
       if (title) params.append("title", title);
       if (categoryId) params.append("categoryId", categoryId);
+      if (sort) params.append("sort", sort);
+      if (period) params.append("period", period);
 
       const response = await fetch(`/api/posts?${params.toString()}`, {
         method: "GET",
@@ -48,7 +52,7 @@ const Page: React.FC = () => {
     } finally {
       setIsLoading(false);
     }
-  }, [title, categoryId]); // 検索条件に依存
+  }, [title, categoryId, sort, period]); // 検索条件に依存
 
   // カテゴリ一覧取得関数
   const fetchCategories = useCallback(async () => {
@@ -97,6 +101,27 @@ const Page: React.FC = () => {
               {c.name}
             </option>
           ))}
+        </select>
+
+        <select
+          className="rounded border px-2 py-1"
+          value={sort}
+          onChange={(e) => setSort(e.target.value)}
+        >
+          <option value="latest">新着順</option>
+          <option value="likes">👍順</option>
+          <option value="dislikes">👎順</option>
+          <option value="views">閲覧数順</option>
+        </select>
+
+        <select
+          className="rounded border px-2 py-1"
+          value={period}
+          onChange={(e) => setPeriod(e.target.value)}
+        >
+          <option value="all">全期間</option>
+          <option value="week">1週間以内</option>
+          <option value="month">1ヶ月以内</option>
         </select>
 
         <button
