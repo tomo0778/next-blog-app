@@ -5,6 +5,9 @@ export type Post = {
   title: string;
   content: string;
   coverImageKey: string | null;
+  likes: number;
+  dislikes: number;
+  views: number;
   createdAt: string;
   updatedAt: string;
   categories: {

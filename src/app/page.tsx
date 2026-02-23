@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react"; // ◀ useCallback を追加
+import { useState, useEffect, useCallback } from "react";
 import type { Post } from "@/app/_types/Post";
 import PostSummary from "@/app/_components/PostSummary";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,15 +14,15 @@ type Category = {
 
 const Page: React.FC = () => {
   const [posts, setPosts] = useState<Post[] | null>(null);
-  const [categories, setCategories] = useState<Category[]>([]); // ◀ 追加
+  const [categories, setCategories] = useState<Category[]>([]);
   const [fetchError, setFetchError] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(false); // ◀ 追加
+  const [isLoading, setIsLoading] = useState(false);
 
-  // 検索条件用 state ◀ 追加
+  // 検索条件用 state
   const [title, setTitle] = useState("");
   const [categoryId, setCategoryId] = useState("");
 
-  // 投稿取得関数 (useCallbackでメモ化) ◀ 修正
+  // 投稿取得関数 (useCallbackでメモ化)
   const fetchPosts = useCallback(async () => {
     try {
       setIsLoading(true);
@@ -50,7 +50,7 @@ const Page: React.FC = () => {
     }
   }, [title, categoryId]); // 検索条件に依存
 
-  // カテゴリ一覧取得関数 ◀ 追加
+  // カテゴリ一覧取得関数
   const fetchCategories = useCallback(async () => {
     try {
       const res = await fetch("/api/categories", { cache: "no-store" });
@@ -62,7 +62,7 @@ const Page: React.FC = () => {
     }
   }, []);
 
-  // 初回レンダリング時の実行 ◀ 修正
+  // 初回レンダリング時の実行
   useEffect(() => {
     fetchCategories();
     fetchPosts();
@@ -76,7 +76,7 @@ const Page: React.FC = () => {
     <main className="space-y-4">
       <div className="mb-2 text-2xl font-bold">Main</div>
 
-      {/* 検索フォーム (管理画面と同じデザイン) ◀ 追加 */}
+      {/* 検索フォーム */}
       <div className="flex flex-wrap gap-4 rounded border bg-slate-50 p-4">
         <input
           type="text"

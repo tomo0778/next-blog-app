@@ -59,6 +59,11 @@ const Page: React.FC = () => {
         const data = (await res.json()) as PostDetail;
         setPost(data);
 
+        // へ閲覧数カウント
+        await fetch(`/api/posts/${id}/view`, {
+          method: "POST",
+        });
+
         // 2. 関連記事を取得 (メイン記事の取得後に実行)
         const relatedRes = await fetch(`/api/posts/${id}/related`);
         if (relatedRes.ok) {

@@ -27,6 +27,8 @@ export const GET = async (req: NextRequest) => {
         title: true,
         content: true,
         createdAt: true,
+        likes: true,
+        views: true,
         categories: {
           select: {
             category: {
