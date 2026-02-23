@@ -26,7 +26,9 @@ export const GET = async (req: NextRequest, routeParams: RouteParams) => {
       );
     }
 
-    const categoryIds = currentPost.categories.map((c) => c.categoryId);
+    const categoryIds = currentPost.categories.map(
+      (c: { categoryId: string }) => c.categoryId,
+    );
 
     // 2. 同じカテゴリを持つ「他の記事」を3件取得
     const relatedPosts = await prisma.post.findMany({
