@@ -1,6 +1,5 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
-import { Category } from "@prisma/client";
 
 type RequestBody = {
   name: string;
@@ -9,7 +8,7 @@ type RequestBody = {
 export const POST = async (req: NextRequest) => {
   try {
     const { name }: RequestBody = await req.json();
-    const category: Category = await prisma.category.create({
+    const category = await prisma.category.create({
       data: {
         name,
       },
