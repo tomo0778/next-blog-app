@@ -14,10 +14,8 @@ export const GET = async (req: NextRequest, routeParams: RouteParams) => {
     // 1. 現在の記事のカテゴリIDを取得
     const currentPost = await prisma.post.findUnique({
       where: { id },
-      select: {
-        categories: {
-          select: { categoryId: true },
-        },
+      include: {
+        categories: true, // ← これが超重要
       },
     });
 
