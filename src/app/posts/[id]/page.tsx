@@ -18,6 +18,9 @@ type PostDetail = {
   coverImageKey: string;
   createdAt: string;
   updatedAt: string;
+  likes: number;
+  dislikes: number;
+  views: number;
   categories: {
     category: {
       id: string;
@@ -39,8 +42,31 @@ const Page: React.FC = () => {
   const [relatedPosts, setRelatedPosts] = useState<RelatedPost[]>([]); // ◀ 追加
   const [isLoading, setIsLoading] = useState(false);
   const [fetchError, setFetchError] = useState<string | null>(null);
+  const [likes, setLikes] = useState(0);
+  const [dislikes, setDislikes] = useState(0);
+  const [views, setViews] = useState(0);
 
   const { id } = useParams() as { id: string };
+
+  const handleLike = async () => {
+    const res = await fetch(`/api/posts/${id}/like`, {
+      method: "POST",
+    });
+
+    const data = await res.json();
+    setLikes(data.likes);
+    setDislikes(data.dislikes);
+  };
+
+  const handleDislike = async () => {
+    const res = await fetch(`/api/posts/${id}/dislike`, {
+      method: "POST",
+    });
+
+    const data = await res.json();
+    setLikes(data.likes);
+    setDislikes(data.dislikes);
+  };
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -59,10 +85,16 @@ const Page: React.FC = () => {
         const data = (await res.json()) as PostDetail;
         setPost(data);
 
-        // へ閲覧数カウント
-        await fetch(`/api/posts/${id}/view`, {
+        setLikes(data.likes);
+        setDislikes(data.dislikes);
+
+        // 閲覧数カウント
+        const viewRes = await fetch(`/api/posts/${id}/view`, {
           method: "POST",
         });
+
+        const viewData = await viewRes.json();
+        setViews(viewData.views);
 
         // 2. 関連記事を取得 (メイン記事の取得後に実行)
         const relatedRes = await fetch(`/api/posts/${id}/related`);
@@ -121,6 +153,23 @@ const Page: React.FC = () => {
               {item.category.name}
             </span>
           ))}
+        </div>
+        <div className="flex items-center gap-4 pt-2 text-sm">
+          <button
+            onClick={handleLike}
+            className="flex items-center gap-1 rounded bg-gray-100 px-2 py-0.5 text-sm text-gray-700 hover:bg-gray-200"
+          >
+            👍 {likes}
+          </button>
+
+          <button
+            onClick={handleDislike}
+            className="flex items-center gap-1 rounded bg-gray-100 px-2 py-0.5 text-sm text-gray-700 hover:bg-gray-200"
+          >
+            👎 {dislikes}
+          </button>
+
+          <span className="text-gray-500">閲覧数 {views}</span>
         </div>
       </div>
 
