@@ -39,8 +39,6 @@ const Page: React.FC = () => {
               className="mr-1 text-blue-500 underline"
             >
               Portfolio
-              <br />
-              ただずいぶん更新してません。。。これを機に新しく作り直してもいいかもと思っています。
             </a>
             (GitHub Pages)
           </div>
