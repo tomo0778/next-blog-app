@@ -1,17 +1,14 @@
 import { prisma } from "@/lib/prisma";
 import { NextResponse, NextRequest } from "next/server";
 
-type RouteParams = {
-  params: Promise<{
-    id: string;
-  }>;
-};
-
 type RequestBody = {
   name: string;
 };
 
-export const PUT = async (req: NextRequest, context: RouteParams) => {
+export async function PUT(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
+) {
   try {
     const { id } = await context.params;
     const { name }: RequestBody = await req.json();
@@ -29,9 +26,12 @@ export const PUT = async (req: NextRequest, context: RouteParams) => {
       { status: 500 },
     );
   }
-};
+}
 
-export const DELETE = async (req: NextRequest, context: RouteParams) => {
+export async function DELETE(
+  req: NextRequest,
+  context: { params: Promise<{ id: string }> },
+) {
   try {
     const { id } = await context.params;
 
@@ -49,4 +49,4 @@ export const DELETE = async (req: NextRequest, context: RouteParams) => {
       { status: 500 },
     );
   }
-};
+}
