@@ -40,7 +40,7 @@ Next Blog App は、技術情報の発信を目的としたブログアプリケ
 
 ## 公開URL
 
-https://next-blog-3fz3p09l2-tomo0778s-projects.vercel.app/
+https://next-blog-app-tmy.vercel.app/
 
 ---
 
