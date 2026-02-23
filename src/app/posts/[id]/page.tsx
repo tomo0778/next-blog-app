@@ -9,6 +9,8 @@ import DOMPurify from "isomorphic-dompurify";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner } from "@fortawesome/free-solid-svg-icons";
 import { supabase } from "@/utils/supabase";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 
 // 既存の型
 type PostDetail = {
@@ -50,6 +52,11 @@ const Page: React.FC = () => {
   const [commentText, setCommentText] = useState("");
 
   const { id } = useParams() as { id: string };
+
+  const copyToClipboard = (text: string) => {
+    navigator.clipboard.writeText(text);
+    alert("コードをコピーしました！");
+  };
 
   const handleLike = async () => {
     const res = await fetch(`/api/posts/${id}/like`, {
@@ -105,6 +112,51 @@ const Page: React.FC = () => {
       </div>
     `;
     });
+  };
+
+  const renderContent = (html: string) => {
+    const parts = html.split(
+      /<pre><code class="language-(\w+)">|<\/code><\/pre>/g,
+    );
+
+    const elements: React.ReactNode[] = [];
+
+    for (let i = 0; i < parts.length; i++) {
+      if (!parts[i]) continue;
+
+      // コード部分
+      if (i % 3 === 2) {
+        const code = parts[i];
+
+        elements.push(
+          <div key={i} className="relative my-4">
+            {/* コピーボタン */}
+            <button
+              onClick={() => copyToClipboard(code)}
+              className="absolute top-2 right-2 rounded bg-gray-700 px-2 py-1 text-xs text-white hover:bg-gray-600"
+            >
+              Copy
+            </button>
+
+            <SyntaxHighlighter
+              language={parts[i - 1]}
+              style={vscDarkPlus}
+              showLineNumbers
+              wrapLines
+              className="rounded-lg text-sm"
+            >
+              {code}
+            </SyntaxHighlighter>
+          </div>,
+        );
+      } else {
+        elements.push(
+          <div key={i} dangerouslySetInnerHTML={{ __html: parts[i] }} />,
+        );
+      }
+    }
+
+    return elements;
   };
 
   useEffect(() => {
@@ -229,10 +281,9 @@ const Page: React.FC = () => {
         />
       </div>
 
-      <div
-        className="border-b pb-12 leading-relaxed"
-        dangerouslySetInnerHTML={{ __html: safeHTML }}
-      />
+      <div className="border-b pb-12 leading-relaxed">
+        {renderContent(safeHTML)}
+      </div>
 
       {/* 関連記事セクション */}
       {relatedPosts.length > 0 && (
